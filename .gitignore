@@ -1,0 +1,10 @@
+# Compiled binary
+gobank
+gobank.exe
+
+# Database and backups (runtime data)
+data/*.db
+data/*.enc
+
+# macOS
+.DS_Store
