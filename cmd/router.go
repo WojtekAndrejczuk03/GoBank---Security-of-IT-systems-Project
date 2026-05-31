@@ -28,12 +28,13 @@ type session struct {
 // Run parses args and dispatches to the appropriate command handler.
 func Run(database *db.DB, dataDir string, args []string) error {
 	if len(args) == 0 {
-		printHelp()
+		fmt.Println(RenderHelp())
 		return nil
 	}
 
 	sessionPath := filepath.Join(dataDir, "session.json")
 
+	fmt.Println()
 	switch args[0] {
 	case "register":
 		return cmdRegister(database)
@@ -67,8 +68,9 @@ func Run(database *db.DB, dataDir string, args []string) error {
 		}
 		return cmdRestore(dataDir, args[1])
 	default:
-		fmt.Printf("Nieznana komenda: %s\n\n", args[0])
-		printHelp()
+		PrintError(fmt.Sprintf("Nieznana komenda: %s", args[0]))
+		fmt.Println()
+		fmt.Println(RenderHelp())
 		return nil
 	}
 }
@@ -76,15 +78,15 @@ func Run(database *db.DB, dataDir string, args []string) error {
 // --- Command implementations ---
 
 func cmdRegister(database *db.DB) error {
-	username, err := prompt("Nazwa użytkownika: ")
+	username, err := prompt("  Nazwa użytkownika: ")
 	if err != nil {
 		return err
 	}
-	password, err := promptPassword("Hasło (min. 8 znaków): ")
+	password, err := promptPassword("  Hasło (min. 8 znaków): ")
 	if err != nil {
 		return err
 	}
-	confirm, err := promptPassword("Potwierdź hasło: ")
+	confirm, err := promptPassword("  Potwierdź hasło: ")
 	if err != nil {
 		return err
 	}
@@ -95,16 +97,16 @@ func cmdRegister(database *db.DB) error {
 	if err := auth.Register(database, username, password); err != nil {
 		return err
 	}
-	fmt.Printf("Konto '%s' zostało utworzone pomyślnie.\n", username)
+	PrintSuccess(fmt.Sprintf("Konto '%s' zostało utworzone pomyślnie.", username))
 	return nil
 }
 
 func cmdLogin(database *db.DB, sessionPath string) error {
-	username, err := prompt("Nazwa użytkownika: ")
+	username, err := prompt("  Nazwa użytkownika: ")
 	if err != nil {
 		return err
 	}
-	password, err := promptPassword("Hasło: ")
+	password, err := promptPassword("  Hasło: ")
 	if err != nil {
 		return err
 	}
@@ -120,7 +122,7 @@ func cmdLogin(database *db.DB, sessionPath string) error {
 		return fmt.Errorf("błąd zapisu sesji: %w", err)
 	}
 
-	fmt.Printf("Zalogowano jako '%s'.\n", user.Username)
+	PrintSuccess(fmt.Sprintf("Zalogowano jako '%s'.", user.Username))
 	return nil
 }
 
@@ -128,7 +130,7 @@ func cmdLogout(sessionPath string) error {
 	if err := os.Remove(sessionPath); err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("błąd wylogowania: %w", err)
 	}
-	fmt.Println("Wylogowano pomyślnie.")
+	PrintSuccess("Wylogowano pomyślnie.")
 	return nil
 }
 
@@ -137,13 +139,13 @@ func cmdBalance(database *db.DB, userID int) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Numer konta : %s\n", acc.AccountNumber)
-	fmt.Printf("Saldo       : %s\n", formatPLN(acc.Balance))
+	fmt.Println()
+	fmt.Println(RenderBalance(acc))
 	return nil
 }
 
 func cmdDeposit(database *db.DB, userID int) error {
-	raw, err := prompt("Kwota wpłaty (PLN): ")
+	raw, err := prompt("  Kwota wpłaty (PLN): ")
 	if err != nil {
 		return err
 	}
@@ -155,16 +157,16 @@ func cmdDeposit(database *db.DB, userID int) error {
 	if err := accounts.Deposit(database, userID, amount); err != nil {
 		return err
 	}
-	fmt.Printf("Wpłacono %s.\n", formatPLN(amount))
+	PrintSuccess(fmt.Sprintf("Wpłacono %s.", formatPLN(amount)))
 	return nil
 }
 
 func cmdTransfer(database *db.DB, userID int) error {
-	target, err := prompt("Numer konta odbiorcy: ")
+	target, err := prompt("  Numer konta odbiorcy: ")
 	if err != nil {
 		return err
 	}
-	raw, err := prompt("Kwota przelewu (PLN): ")
+	raw, err := prompt("  Kwota przelewu (PLN): ")
 	if err != nil {
 		return err
 	}
@@ -177,7 +179,7 @@ func cmdTransfer(database *db.DB, userID int) error {
 	if err := accounts.Transfer(database, userID, targetTrimmed, amount); err != nil {
 		return err
 	}
-	fmt.Printf("Przelew %s na konto %s wykonany pomyslnie.\n", formatPLN(amount), targetTrimmed)
+	PrintSuccess(fmt.Sprintf("Przelew %s na konto %s wykonany pomyślnie.", formatPLN(amount), targetTrimmed))
 	return nil
 }
 
@@ -186,27 +188,13 @@ func cmdHistory(database *db.DB, userID int) error {
 	if err != nil {
 		return err
 	}
-	if len(txns) == 0 {
-		fmt.Println("Brak historii transakcji.")
-		return nil
-	}
-
-	fmt.Printf("%-4s %-12s %-14s %-20s %s\n", "Lp.", "Typ", "Kwota", "Data", "Opis")
-	fmt.Println(strings.Repeat("-", 72))
-	for i, t := range txns {
-		fmt.Printf("%-4d %-12s %-14s %-20s %s\n",
-			i+1,
-			translateType(t.Type),
-			formatPLN(t.Amount),
-			t.CreatedAt,
-			t.Description,
-		)
-	}
+	fmt.Println()
+	fmt.Println(RenderHistory(txns))
 	return nil
 }
 
 func cmdBackup(dataDir string) error {
-	password, err := promptPassword("Hasło do zaszyfrowania kopii: ")
+	password, err := promptPassword("  Hasło do zaszyfrowania kopii: ")
 	if err != nil {
 		return err
 	}
@@ -215,12 +203,12 @@ func cmdBackup(dataDir string) error {
 	if err != nil {
 		return err
 	}
-	fmt.Printf("Kopia zapasowa zapisana: %s\n", path)
+	PrintSuccess(fmt.Sprintf("Kopia zapasowa zapisana: %s", path))
 	return nil
 }
 
 func cmdRestore(dataDir, backupFile string) error {
-	password, err := promptPassword("Hasło do odszyfrowania kopii: ")
+	password, err := promptPassword("  Hasło do odszyfrowania kopii: ")
 	if err != nil {
 		return err
 	}
@@ -228,8 +216,8 @@ func cmdRestore(dataDir, backupFile string) error {
 	if err := backup.Restore(dataDir, backupFile, password); err != nil {
 		return err
 	}
-	fmt.Println("Baza danych zostala przywrocona z kopii zapasowej.")
-	fmt.Println("Poprzednia baza zapisana jako gobank.db.bak")
+	PrintSuccess("Baza danych została przywrócona z kopii zapasowej.")
+	PrintSuccess("Poprzednia baza zapisana jako gobank.db.bak")
 	return nil
 }
 
@@ -321,19 +309,3 @@ func translateType(t string) string {
 	}
 }
 
-func printHelp() {
-	fmt.Println("GoBank — bezpieczna aplikacja bankowa")
-	fmt.Println()
-	fmt.Println("Uzycie: gobank <komenda>")
-	fmt.Println()
-	fmt.Println("Komendy:")
-	fmt.Println("  register          Rejestracja nowego uzytkownika")
-	fmt.Println("  login             Logowanie")
-	fmt.Println("  logout            Wylogowanie")
-	fmt.Println("  balance           Sprawdz saldo")
-	fmt.Println("  deposit           Wplac srodki")
-	fmt.Println("  transfer          Wykonaj przelew")
-	fmt.Println("  history           Historia transakcji (ostatnie 20)")
-	fmt.Println("  backup            Utworz zaszyfrowana kopie zapasowa")
-	fmt.Println("  restore <plik>    Przywroc baze z kopii zapasowej")
-}
