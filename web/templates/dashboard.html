@@ -1,0 +1,26 @@
+{{define "content"}}
+<h2 style="margin-bottom:1.25rem;color:#4a5568;font-size:1rem;font-weight:500">
+    Witaj, <strong style="color:#1a202c">{{.Username}}</strong>!
+</h2>
+
+<div class="grid-2">
+    <div class="card">
+        <h2>Stan konta</h2>
+        <div class="balance-label">Dostępne środki</div>
+        <div class="balance-amount">{{.Balance}}</div>
+        <div style="margin-top:1.25rem">
+            <div class="balance-label">Numer konta</div>
+            <div class="account-number">{{.AccountNumber}}</div>
+        </div>
+    </div>
+
+    <div class="card">
+        <h2>Szybkie akcje</h2>
+        <div class="quick-actions">
+            <a href="/deposit" class="primary">💰 Wpłać środki</a>
+            <a href="/transfer" class="secondary">↗ Wykonaj przelew</a>
+            <a href="/history" class="secondary">📋 Historia transakcji</a>
+        </div>
+    </div>
+</div>
+{{end}}

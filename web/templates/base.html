@@ -1,0 +1,98 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>GoBank</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: system-ui, -apple-system, sans-serif; background: #f0f4f8; color: #1a202c; }
+
+        /* Nav */
+        header { background: #1a56db; color: white; padding: 0 2rem; display: flex; justify-content: space-between; align-items: center; height: 56px; box-shadow: 0 2px 4px rgba(0,0,0,.2); }
+        header .brand { font-size: 1.25rem; font-weight: 700; letter-spacing: -0.5px; }
+        header nav a { color: rgba(255,255,255,.85); text-decoration: none; margin-left: 1.5rem; font-size: .9rem; }
+        header nav a:hover { color: white; }
+        header nav a.active { color: white; font-weight: 600; border-bottom: 2px solid white; padding-bottom: 2px; }
+
+        /* Layout */
+        main { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+
+        /* Cards */
+        .card { background: white; border-radius: 10px; padding: 2rem; box-shadow: 0 1px 4px rgba(0,0,0,.08); margin-bottom: 1.5rem; }
+        .card h2 { margin-bottom: 1.25rem; font-size: 1.25rem; color: #1a202c; }
+
+        /* Forms */
+        label { display: block; margin-top: 1.25rem; font-size: .875rem; font-weight: 600; color: #4a5568; }
+        input[type=text], input[type=password] { width: 100%; margin-top: .4rem; padding: .65rem .9rem; border: 1px solid #cbd5e0; border-radius: 6px; font-size: 1rem; outline: none; transition: border-color .15s; }
+        input:focus { border-color: #1a56db; box-shadow: 0 0 0 3px rgba(26,86,219,.15); }
+        button, .btn { display: block; width: 100%; margin-top: 1.5rem; padding: .7rem 1rem; background: #1a56db; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: 600; cursor: pointer; text-align: center; text-decoration: none; transition: background .15s; }
+        button:hover, .btn:hover { background: #1447b5; }
+        button.outline, .btn.outline { background: white; color: #1a56db; border: 1px solid #1a56db; }
+        button.outline:hover, .btn.outline:hover { background: #eef2ff; }
+
+        /* Alerts */
+        .alert { padding: .75rem 1rem; border-radius: 6px; margin-bottom: 1.25rem; font-size: .9rem; }
+        .alert-error   { background: #fff5f5; color: #c53030; border-left: 4px solid #c53030; }
+        .alert-success { background: #f0fff4; color: #276749; border-left: 4px solid #276749; }
+
+        /* Grid */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+        @media (max-width: 600px) { .grid-2 { grid-template-columns: 1fr; } }
+
+        /* Dashboard balance */
+        .balance-label { font-size: .875rem; color: #718096; margin-bottom: .25rem; }
+        .balance-amount { font-size: 2.75rem; font-weight: 700; color: #1a56db; line-height: 1; }
+        .account-number { font-family: monospace; font-size: .95rem; background: #f7fafc; padding: .5rem .75rem; border-radius: 5px; color: #4a5568; margin-top: .5rem; word-break: break-all; }
+        .quick-actions a { display: block; margin-top: .75rem; padding: .7rem 1rem; border-radius: 6px; text-align: center; font-weight: 600; text-decoration: none; }
+        .quick-actions a.primary { background: #1a56db; color: white; }
+        .quick-actions a.primary:hover { background: #1447b5; }
+        .quick-actions a.secondary { background: white; color: #1a56db; border: 1px solid #1a56db; }
+        .quick-actions a.secondary:hover { background: #eef2ff; }
+
+        /* Table */
+        table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+        th { text-align: left; padding: .6rem 1rem; background: #f7fafc; color: #718096; font-size: .75rem; text-transform: uppercase; letter-spacing: .05em; border-bottom: 1px solid #e2e8f0; }
+        td { padding: .75rem 1rem; border-bottom: 1px solid #f0f4f8; }
+        tr:last-child td { border-bottom: none; }
+        .badge { padding: .2rem .55rem; border-radius: 99px; font-size: .78rem; font-weight: 600; }
+        .badge-deposit    { background: #f0fff4; color: #276749; }
+        .badge-transfer   { background: #ebf4ff; color: #1a56db; }
+        .badge-withdrawal { background: #fff5f5; color: #c53030; }
+        .amount { font-weight: 600; }
+
+        /* Auth pages */
+        .auth-wrap { max-width: 420px; margin: 3rem auto; }
+        .auth-title { text-align: center; margin-bottom: 2rem; }
+        .auth-title h1 { font-size: 1.75rem; color: #1a56db; }
+        .auth-title p { color: #718096; margin-top: .25rem; }
+        .auth-link { text-align: center; margin-top: 1.25rem; font-size: .9rem; color: #718096; }
+        .auth-link a { color: #1a56db; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+
+{{if .LoggedIn}}
+<header>
+    <span class="brand">💳 GoBank</span>
+    <nav>
+        <a href="/">Saldo</a>
+        <a href="/deposit">Wpłata</a>
+        <a href="/transfer">Przelew</a>
+        <a href="/history">Historia</a>
+        <a href="/backup">Backup</a>
+        <a href="/logout">Wyloguj ({{.Username}})</a>
+    </nav>
+</header>
+{{end}}
+
+<main>
+    {{if .Error}}<div class="alert alert-error">{{.Error}}</div>{{end}}
+    {{if .Success}}<div class="alert alert-success">{{.Success}}</div>{{end}}
+    {{template "content" .}}
+</main>
+
+</body>
+</html>
+{{end}}

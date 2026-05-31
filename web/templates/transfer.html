@@ -1,0 +1,17 @@
+{{define "content"}}
+<div style="max-width:480px">
+    <div class="card">
+        <h2>↗ Przelew bankowy</h2>
+        <form method="POST" action="/transfer">
+            <label>Numer konta odbiorcy
+                <input type="text" name="target" placeholder="PL00000000000000000000000000" required autofocus>
+            </label>
+            <label>Kwota (PLN)
+                <input type="text" name="amount" placeholder="np. 50.00" required>
+            </label>
+            <button type="submit">Wyślij przelew</button>
+        </form>
+    </div>
+    <a href="/" class="btn outline" style="margin-top:0">← Powrót do konta</a>
+</div>
+{{end}}

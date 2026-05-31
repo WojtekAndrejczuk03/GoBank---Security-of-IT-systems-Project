@@ -1,0 +1,31 @@
+{{define "content"}}
+<div class="card">
+    <h2>📋 Historia transakcji <span style="color:#718096;font-weight:400;font-size:.9rem">(ostatnie 20)</span></h2>
+    {{if .Transactions}}
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Typ</th>
+                <th>Kwota</th>
+                <th>Data</th>
+                <th>Opis</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range $i, $t := .Transactions}}
+            <tr>
+                <td style="color:#718096">{{add $i 1}}</td>
+                <td><span class="badge badge-{{$t.Type}}">{{translateType $t.Type}}</span></td>
+                <td class="amount">{{formatPLN $t.Amount}}</td>
+                <td style="color:#718096;font-size:.85rem">{{$t.CreatedAt}}</td>
+                <td style="color:#4a5568">{{$t.Description}}</td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    <p style="color:#718096;padding:1rem 0">Brak historii transakcji.</p>
+    {{end}}
+</div>
+{{end}}

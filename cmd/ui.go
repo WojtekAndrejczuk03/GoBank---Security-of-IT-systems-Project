@@ -135,6 +135,7 @@ func RenderHelp() string {
 		{"history", "Historia transakcji (ostatnie 20)"},
 		{"backup", "Utwórz zaszyfrowaną kopię zapasową"},
 		{"restore <plik>", "Przywróć bazę z kopii zapasowej"},
+		{"web [port]", "Uruchom interfejs webowy (domyślnie :8080)"},
 	}
 
 	var sb strings.Builder

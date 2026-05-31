@@ -1,0 +1,32 @@
+{{define "content"}}
+<div class="grid-2">
+    <div class="card">
+        <h2>🔒 Utwórz kopię zapasową</h2>
+        <p style="color:#718096;font-size:.9rem;margin-bottom:.5rem">
+            Baza danych zostanie zaszyfrowana kluczem AES-256 i zapisana jako plik .enc.
+        </p>
+        <form method="POST" action="/backup">
+            <label>Hasło szyfrowania
+                <input type="password" name="password" required autofocus>
+            </label>
+            <button type="submit">Utwórz kopię</button>
+        </form>
+    </div>
+
+    <div class="card">
+        <h2>♻️ Przywróć z kopii</h2>
+        <p style="color:#718096;font-size:.9rem;margin-bottom:.5rem">
+            Obecna baza zostanie zapisana jako .bak przed przywróceniem.
+        </p>
+        <form method="POST" action="/restore">
+            <label>Ścieżka do pliku kopii
+                <input type="text" name="file" placeholder="data/backup_....enc" required>
+            </label>
+            <label>Hasło odszyfrowania
+                <input type="password" name="password" required>
+            </label>
+            <button type="submit" class="outline">Przywróć</button>
+        </form>
+    </div>
+</div>
+{{end}}

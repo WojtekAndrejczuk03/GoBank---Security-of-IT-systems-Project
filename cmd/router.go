@@ -16,6 +16,7 @@ import (
 	"github.com/wojtekandrejczuk/gobank/internal/auth"
 	"github.com/wojtekandrejczuk/gobank/internal/backup"
 	"github.com/wojtekandrejczuk/gobank/internal/db"
+	"github.com/wojtekandrejczuk/gobank/internal/server"
 )
 
 // session stores the currently logged-in user between CLI invocations.
@@ -67,6 +68,13 @@ func Run(database *db.DB, dataDir string, args []string) error {
 			return errors.New("użycie: gobank restore <plik_kopii>")
 		}
 		return cmdRestore(dataDir, args[1])
+	case "web":
+		addr := ":8080"
+		if len(args) > 1 {
+			addr = args[1]
+		}
+		srv := server.New(database, dataDir)
+		return srv.Start(addr)
 	default:
 		PrintError(fmt.Sprintf("Nieznana komenda: %s", args[0]))
 		fmt.Println()

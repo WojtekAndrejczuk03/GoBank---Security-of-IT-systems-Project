@@ -1,0 +1,20 @@
+{{define "content"}}
+<div class="auth-wrap">
+    <div class="auth-title">
+        <h1>💳 GoBank</h1>
+        <p>Zaloguj się do swojego konta</p>
+    </div>
+    <div class="card">
+        <form method="POST" action="/login">
+            <label>Nazwa użytkownika
+                <input type="text" name="username" required autofocus autocomplete="username">
+            </label>
+            <label>Hasło
+                <input type="password" name="password" required autocomplete="current-password">
+            </label>
+            <button type="submit">Zaloguj się</button>
+        </form>
+    </div>
+    <p class="auth-link">Nie masz konta? <a href="/register">Zarejestruj się</a></p>
+</div>
+{{end}}

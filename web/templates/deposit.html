@@ -1,0 +1,14 @@
+{{define "content"}}
+<div style="max-width:480px">
+    <div class="card">
+        <h2>💰 Wpłata środków</h2>
+        <form method="POST" action="/deposit">
+            <label>Kwota (PLN)
+                <input type="text" name="amount" placeholder="np. 100.00" required autofocus>
+            </label>
+            <button type="submit">Wpłać</button>
+        </form>
+    </div>
+    <a href="/" class="btn outline" style="margin-top:0">← Powrót do konta</a>
+</div>
+{{end}}
