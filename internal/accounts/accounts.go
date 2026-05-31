@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/wojtekandrejczuk/gobank/internal/db"
 )
@@ -21,7 +20,7 @@ type Transaction struct {
 	Type        string // "deposit", "withdrawal", "transfer"
 	Amount      int    // in grosze
 	Description string
-	CreatedAt   time.Time
+	CreatedAt   string // SQLite returns DATETIME as "YYYY-MM-DD HH:MM:SS"
 }
 
 // GetBalance returns the account number and current balance (in grosze)
